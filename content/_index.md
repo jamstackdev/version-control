@@ -30,6 +30,10 @@ p,div {
 }
   
 
+.reveal code-wrapper {
+    width: 150%;
+    left: -25%;
+}
 */
 
 .reveal h2,h3 {
@@ -188,7 +192,7 @@ $ hugo version
 - You can create tokens for your GitHub a/c as follows
   - Click on your user icon at the very right of the "ribbon" at the top of GitHub landing page
   - Select Settings/Developer Settings/Personal Access tokens
-  - create a "classic" token using the "Generate new Token" button
+  - create a "classic" token using the "Generate new Token" button and tick the "repo" box
   - Make sure to copy the token to a local file 
 - We'll enter the token whenever we are prompted for a password by git when accessing GitHub   
 
@@ -221,12 +225,18 @@ $ hugo version
 I'll use these commands
 
 ``` bash
-git init # creates a new .git subfolder and populates it with git stuff - you can now do version control on the folder contents using git
-git clone https://github.com/leachim6/hello-world.git # downloads a copy of a repo from GitHub including its .git subfolder
-git status # tells you what files have not yet been brought into version control
+git init # creates a new .git subfolder and populates it with 
+# git stuff - you can now do version control on the folder 
+# contents using git
+git clone https://github.com/leachim6/hello-world.git # 
+# downloads a copy of a repo from GitHub including its .git 
+# subfolder
+git status # tells you what files have not yet been brought into 
+# version control
 git log # lists events that have occurred to the repo
 git add . # tentatively adds all new or updated files to the repo
-git commit -m "add wonderful code" # "commits" those tentative files, and labels the commit with a text descrption
+git commit -m "add wonderful code" # "commits" those tentative 
+# files, and labels the commit with a text descrption
 git push # updates a remote repo with the changes in our local copy 
 ```
 
@@ -256,13 +266,61 @@ git remote add origin https://github.com/jamstackdev/version-control.git
 
 ---
 
+# Let's build a slide deck
+
+{{% section %}}
+
+```bash{1-3|4|5-6|7-9}
+hugo new site version-control # create a new directory
+# laid out as per hugo requirements
+cd version-control/ # go into it
+git init # set up version control
+hugo mod init github.com/jamstackdev/version-control # set it
+# up as a hugo module
+git submodule add \
+https://github.com/dzello/reveal-hugo.git themes/reveal-hugo
+# download (via git) the project theme
+```
+---
+
+```bash{1|2|3|4|5|6|7}
+nano config.toml # edit/enter some project settings
+nano content/_index.md # add slideshow content here
+hugo serve # see how it looks at http://127.0.0.1:1313
+hugo # create the website in public folder
+git status # what files have changed?
+nano .gitignore # add public dir to list of files to ignore
+git status # the public folder contents no longer listed
+```
+
+---
+
+```bash{1-2|3-5|6-7}
+git add .
+git status
+git commit -m "first slide"
+git status
+git log
+git push # this won't work - git doesn't know
+# where to push to (i.e., github)
+```
+
+
+
+
+{{% /section %}}
+
+---
+
 # Telling git about GitHub
+{{% section %}}
 
 - the command `git push` is used to copy the local repo to a remote repository
 - we get this error
 ```
 fatal: No configured push destination.
-Either specify the URL from the command-line or configure a remote repository using
+Either specify the URL from the command-line or
+configure a remote repository using
 
     git remote add <name> <url>
 
@@ -273,14 +331,20 @@ and then push using the remote name
 ```
 ---
 
-```bash
-$ git remote add origin https://github.com/jamstackdev/version-contl.git
+- let's fix that
+
+```bash{1-2|3-5}
+$ git remote add origin \
+https://github.com/jamstackdev/version-contl.git
 $ git remote -v
 origin  https://github.com/jamstackdev/version-control.git (fetch)
 origin  https://github.com/jamstackdev/version-control.git (push)
 ```
 
 ---
+
+- now try again
+
 
 ```bash
 $ git push
@@ -290,27 +354,34 @@ To push the current branch and set the remote as upstream, use
     git push --set-upstream origin master
 
 ```
-- see [this](https://stackoverflow.com/questions/37770467/why-do-i-have-to-git-push-set-upstream-origin-branch) explanation of what this means
+- see [this](https://stackoverflow.com/questions/37770467/why-do-i-have-to-git-push-set-upstream-origin-branch) for an explanation of what this means
 
 ---
 
 - so now we try
 
+
 ```
 $ git push -u origin master
 remote: Repository not found.
-fatal: repository 'https://github.com/jamstackdev/version-control.git/' not found
-
+fatal: repository 
+'https://github.com/jamstackdev/version-control.git/' 
+not found
 ```
+
 - What's gone wrong?
     - the push won't create a new remote repo
-    - if the remote repo does not exist it just stops
+    - if the remote repo does not exist it just gives up
 
+{{% /section %}}
 
 ---
+
 # After creating the new repo
 
+
 GitHub advises either
+
 ```bash
 # create a new repository on the command line
 echo "# version-control" >> README.md
@@ -318,29 +389,45 @@ git init
 git add README.md
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://github.com/jamstackdev/version-control.git
-git push -u origin main
-```
-- or
-```bash
-# push an existing repository from the command line
-git remote add origin https://github.com/jamstackdev/version-control.git
-git branch -M main # GitHub prefers to call the principal branch "main" rather than "master"
+git remote add origin \
+https://github.com/jamstackdev/version-control.git
 git push -u origin main
 ```
 
 ---
+# After creating the new repo
+- or
+```bash
+# push an existing repository from the command line
+git remote add origin \
+https://github.com/jamstackdev/version-control.git
+git branch -M main # GitHub prefers to call the 
+# principal branch "main" rather than "master"
+git push -u origin main
+```
+
+---
+# After creating the new repo
 
 We go with the second approach, since our git-managed project already exists
-```
+
+```bash
 l$ git push -u origin main
-remote: Permission to jamstackdev/version-control.git denied to ********.
-fatal: unable to access 'https://github.com/jamstackdev/version-control.git/': The requested URL returned error: 403
+remote: Permission to jamstackdev/version-control.git
+denied to ********.
+fatal: unable to access 
+'https://github.com/jamstackdev/version-control.git/':
+ The requested URL returned error: 403
 ```
 
-You will most likely get a different error - it will compalin that you have no user email or user name associated with the repo. Check this using
+You will most likely get a different error - it will complain that you have no user email or user name associated with the repo. Check this using (overleaf)
 
-```
+---
+
+# After creating the new repo
+
+
+```bash{2-3}
 $ git config --list
 user.email=anonymous@nowhere.none
 user.name=Joe-Jane Bloggs-Doe
@@ -354,6 +441,10 @@ remote.origin.url=https://github.com/jamstackdev/version-control.git
 remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
 ```
 
+---
+
+# After creating the new repo
+
 If those first two fields are blank, you need to set them, using either
 
 ```bash
@@ -366,10 +457,58 @@ or
 ```bash
 $ git config user.name "Jane Doe"
 $ git config user.email janedoe@wherever.com
-
 ```
 
-The latter approach sets a custom identity for this repo, `--global` applies it to every repo attached to your account on the local machine
+- The latter approach sets a custom identity for this repo, `--global` applies it to every repo attached to your account on the local machine
+
+---
+
+# Maintaining the repo
+
+After future edits, we use `git add` and `git commit` and then simply
+
+```
+$ git push
+Counting objects: 4, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (4/4), 2.26 KiB | 257.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/jamstackdev/version-control.git
+   b7c18d9..7f05503  main -> main
+```
+
+---
+
+# Maintaining the repo
+
+- what happens if someone makes a change to the remote repo?
+    - e.g., add a README.md file on GitHub
+- how do we keep in sync?
+
+---
+
+# Maintaining the repo
+
+
+```
+$ git pull
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), done.
+From https://github.com/jamstackdev/version-control
+   7f05503..8d974c5  main       -> origin/main
+Updating 7f05503..8d974c5
+Fast-forward
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 README.md
+```
+- git will complain to you if the pull clashes with your existing content (you'd edited README.md too).
+
 
 
 ---
@@ -379,6 +518,50 @@ The latter approach sets a custom identity for this repo, `--global` applies it 
 - GitHub provides a "no reply" address you can use for commits so that you can keep your regular email address private when committing to a public repo. See [here](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)
 - this used to be simply `USERNAME@users.noreply.github.com` but new accounts have a more complex prefix - go into email settings on your GitHub account to find out what it is.
 
+---
+
+# Github.io
+
+{{% section %}}
+
+- to push a website onto Github
+    - create a repo on Github called username.github.io
+        - if your username is "username"!
+    - Make it public!
+
+---
+
+- to push a website onto Github
+    - now use git tools to push the website content onto GitHub
+        - same approach as we did before except..
+        - the upload triggers a "GitHub" action to update your website
+        - check its progress under the "actions" tab on the repo homepage
+        - get a DNS record to give it a [nice name](https://entwine.dcu.ie)
+
+
+{{% /section %}}
+
+---
+
+# Automating website updates
+
+- if you have a "Jamstack" repo on GitHub, you can set up a GitHub action to automatically update your website whenever a "git push" occurs
+    - your repo must be public or paid for
+    - you set up a GitHub action to trigger hugo or zola or jekyll or whatever your build tool is
+    - the build tool runs on GitHub servers
+- other vendors offer similar tools    
+
+---
+
+# Going further
+
+- If we had more time, we'd look at
+    - _branches_
+        - two or more variants of a repo where different features are being worked upon
+    - [reverting changes](https://www.theserverside.com/tutorial/How-to-git-revert-a-commit-A-simple-undo-changes-example)
+        - use this with care 
+- Free book!
+    - [Pro Git](https://git-scm.com/book/en/v2)
 ---
 
 # the end
