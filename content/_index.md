@@ -228,5 +228,157 @@ git log # lists events that have occurred to the repo
 git add . # tentatively adds all new or updated files to the repo
 git commit -m "add wonderful code" # "commits" those tentative files, and labels the commit with a text descrption
 git push # updates a remote repo with the changes in our local copy 
+```
+
+{{% note %}}
+```bash
+hugo new site version-control # create a new directory laid out as per hugo requirements
+cd version-control/ # go into it
+git init # set up version control
+hugo mod init github.com/jamstackdev/version-control # set it up as a hugo module
+git submodule add https://github.com/dzello/reveal-hugo.git themes/reveal-hugo # download (via git) the project theme
+nano config.toml # edit/enter some project settings
+nano content/_index.md # add slideshow content here
+hugo serve # see how it looks at http://127.0.0.1:1313
+hugo # create the website in public folder
+git status # what files have changed?
+nano .gitignore # add public dir to list of files to ignore
+git status # the public folder contents no longer listed
+git add .
+git status
+git commit -m "first slide"
+git status
+git log
+git push # this won't work - git doesn't know where to push to (i.e., github)
+git remote add origin https://github.com/jamstackdev/version-control.git
+```
+{{% /note %}}
+
+---
+
+# Telling git about GitHub
+
+- the command `git push` is used to copy the local repo to a remote repository
+- we get this error
+```
+fatal: No configured push destination.
+Either specify the URL from the command-line or configure a remote repository using
+
+    git remote add <name> <url>
+
+and then push using the remote name
+
+    git push <name>
 
 ```
+---
+
+```bash
+$ git remote add origin https://github.com/jamstackdev/version-contl.git
+$ git remote -v
+origin  https://github.com/jamstackdev/version-control.git (fetch)
+origin  https://github.com/jamstackdev/version-control.git (push)
+```
+
+---
+
+```bash
+$ git push
+fatal: The current branch master has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin master
+
+```
+- see [this](https://stackoverflow.com/questions/37770467/why-do-i-have-to-git-push-set-upstream-origin-branch) explanation of what this means
+
+---
+
+- so now we try
+
+```
+$ git push -u origin master
+remote: Repository not found.
+fatal: repository 'https://github.com/jamstackdev/version-control.git/' not found
+
+```
+- What's gone wrong?
+    - the push won't create a new remote repo
+    - if the remote repo does not exist it just stops
+
+
+---
+# After creating the new repo
+
+GitHub advises either
+```bash
+# create a new repository on the command line
+echo "# version-control" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/jamstackdev/version-control.git
+git push -u origin main
+```
+- or
+```bash
+# push an existing repository from the command line
+git remote add origin https://github.com/jamstackdev/version-control.git
+git branch -M main # GitHub prefers to call the principal branch "main" rather than "master"
+git push -u origin main
+```
+
+---
+
+We go with the second approach, since our git-managed project already exists
+```
+l$ git push -u origin main
+remote: Permission to jamstackdev/version-control.git denied to ********.
+fatal: unable to access 'https://github.com/jamstackdev/version-control.git/': The requested URL returned error: 403
+```
+
+You will most likely get a different error - it will compalin that you have no user email or user name associated with the repo. Check this using
+
+```
+$ git config --list
+user.email=anonymous@nowhere.none
+user.name=Joe-Jane Bloggs-Doe
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+submodule.reveal-hugo.url=https://github.com/dzello/reveal-hugo.git
+submodule.reveal-hugo.active=true
+remote.origin.url=https://github.com/jamstackdev/version-control.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+```
+
+If those first two fields are blank, you need to set them, using either
+
+```bash
+$ git config --global user.name "John Doe"
+$ git config --global user.email johndoe@wherever.com
+```
+
+or
+
+```bash
+$ git config user.name "Jane Doe"
+$ git config user.email janedoe@wherever.com
+
+```
+
+The latter approach sets a custom identity for this repo, `--global` applies it to every repo attached to your account on the local machine
+
+
+---
+
+# Avoiding spam
+
+- GitHub provides a "no reply" address you can use for commits so that you can keep your regular email address private when committing to a public repo. See [here](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)
+- this used to be simply `USERNAME@users.noreply.github.com` but new accounts have a more complex prefix - go into email settings on your GitHub account to find out what it is.
+
+---
+
+# the end
